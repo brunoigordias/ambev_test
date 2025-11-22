@@ -1,6 +1,7 @@
 using Ambev.DeveloperEvaluation.Common.Validation;
 using Ambev.DeveloperEvaluation.Domain.Common;
 using Ambev.DeveloperEvaluation.Domain.Exceptions;
+using static Ambev.DeveloperEvaluation.Domain.Common.SaleBusinessRules;
 using Ambev.DeveloperEvaluation.Domain.Validation;
 
 namespace Ambev.DeveloperEvaluation.Domain.Entities;
@@ -102,25 +103,25 @@ public class SaleItem : BaseEntity
     public void CalculateDiscountAndTotal()
     {
         // Business rule: Maximum 20 items per product
-        if (Quantity > 20)
+        if (Quantity > MAX_QUANTITY_ALLOWED)
         {
-            throw new DomainException("It's not possible to sell above 20 identical items.");
+            throw new DomainException($"It's not possible to sell above {MAX_QUANTITY_ALLOWED} identical items.");
         }
 
         // Business rule: Below 4 items cannot have discount
-        if (Quantity < 4)
+        if (Quantity < MIN_QUANTITY_FOR_DISCOUNT)
         {
             DiscountPercentage = 0;
         }
         // Business rule: 10-20 items have 20% discount
-        else if (Quantity >= 10 && Quantity <= 20)
+        else if (Quantity >= MIN_QUANTITY_FOR_HIGH_DISCOUNT && Quantity <= MAX_QUANTITY_ALLOWED)
         {
-            DiscountPercentage = 20;
+            DiscountPercentage = HIGH_DISCOUNT_PERCENTAGE;
         }
         // Business rule: 4+ items have 10% discount
-        else if (Quantity >= 4)
+        else if (Quantity >= MIN_QUANTITY_FOR_DISCOUNT)
         {
-            DiscountPercentage = 10;
+            DiscountPercentage = LOW_DISCOUNT_PERCENTAGE;
         }
 
         var subtotal = Quantity * UnitPrice;

@@ -1,3 +1,4 @@
+using Ambev.DeveloperEvaluation.Domain.Common;
 using Ambev.DeveloperEvaluation.Domain.Entities;
 using FluentValidation;
 
@@ -21,10 +22,10 @@ public class SaleItemValidator : AbstractValidator<SaleItem>
             .WithMessage("Product description cannot be longer than 500 characters.");
 
         RuleFor(item => item.Quantity)
-            .GreaterThan(0)
-            .WithMessage("Quantity must be greater than zero.")
-            .LessThanOrEqualTo(20)
-            .WithMessage("It's not possible to sell above 20 identical items.");
+            .GreaterThanOrEqualTo(SaleBusinessRules.MIN_QUANTITY)
+            .WithMessage($"Quantity must be at least {SaleBusinessRules.MIN_QUANTITY}.")
+            .LessThanOrEqualTo(SaleBusinessRules.MAX_QUANTITY_ALLOWED)
+            .WithMessage($"It's not possible to sell above {SaleBusinessRules.MAX_QUANTITY_ALLOWED} identical items.");
 
         RuleFor(item => item.UnitPrice)
             .GreaterThan(0)
