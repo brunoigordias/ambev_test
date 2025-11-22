@@ -1,47 +1,44 @@
 using Ambev.DeveloperEvaluation.Domain.Common;
 using Ambev.DeveloperEvaluation.Domain.Exceptions;
+using Ambev.DeveloperEvaluation.Domain.Repositories;
 
 namespace Ambev.DeveloperEvaluation.Domain.Services;
 
 /// <summary>
-/// Implementation of discount calculation service based on business rules
+/// Implementation of discount calculation service based on business rules from database
 /// </summary>
 public class SaleDiscountService : ISaleDiscountService
 {
+    private readonly IDiscountRuleRepository _discountRuleRepository;
 
     /// <summary>
-    /// Calculates the discount percentage based on quantity
-    /// Business rules:
-    /// - Below 4 items: no discount (0%)
-    /// - 4-9 items: 10% discount
-    /// - 10-20 items: 20% discount
-    /// - Above 20 items: not allowed (throws exception)
+    /// Initializes a new instance of SaleDiscountService
     /// </summary>
-    public decimal CalculateDiscountPercentage(int quantity)
+    /// <param name="discountRuleRepository">The discount rule repository</param>
+    public SaleDiscountService(IDiscountRuleRepository discountRuleRepository)
+    {
+        _discountRuleRepository = discountRuleRepository;
+    }
+
+    /// <summary>
+    /// Calculates the discount percentage based on quantity using rules from database
+    /// </summary>
+    public async Task<decimal> CalculateDiscountPercentageAsync(int quantity, CancellationToken cancellationToken = default)
     {
         if (!IsQuantityValid(quantity))
         {
             throw new DomainException($"It's not possible to sell above {SaleBusinessRules.MAX_QUANTITY_ALLOWED} identical items.");
         }
 
-        // Business rule: Below 4 items cannot have discount
-        if (quantity < SaleBusinessRules.MIN_QUANTITY_FOR_DISCOUNT)
+        // Get applicable discount rule from database
+        var applicableRule = await _discountRuleRepository.GetApplicableRuleAsync(quantity, cancellationToken);
+
+        if (applicableRule != null)
         {
-            return 0;
+            return applicableRule.DiscountPercentage;
         }
 
-        // Business rule: 10-20 items have 20% discount
-        if (quantity >= SaleBusinessRules.MIN_QUANTITY_FOR_HIGH_DISCOUNT && quantity <= SaleBusinessRules.MAX_QUANTITY_ALLOWED)
-        {
-            return SaleBusinessRules.HIGH_DISCOUNT_PERCENTAGE;
-        }
-
-        // Business rule: 4+ items have 10% discount
-        if (quantity >= SaleBusinessRules.MIN_QUANTITY_FOR_DISCOUNT)
-        {
-            return SaleBusinessRules.LOW_DISCOUNT_PERCENTAGE;
-        }
-
+        // No discount rule applies
         return 0;
     }
 
@@ -56,9 +53,9 @@ public class SaleDiscountService : ISaleDiscountService
     /// <summary>
     /// Calculates the discount amount based on quantity and unit price
     /// </summary>
-    public decimal CalculateDiscountAmount(int quantity, decimal unitPrice)
+    public async Task<decimal> CalculateDiscountAmountAsync(int quantity, decimal unitPrice, CancellationToken cancellationToken = default)
     {
-        var discountPercentage = CalculateDiscountPercentage(quantity);
+        var discountPercentage = await CalculateDiscountPercentageAsync(quantity, cancellationToken);
         var subtotal = quantity * unitPrice;
         return subtotal * (discountPercentage / 100);
     }
@@ -66,10 +63,10 @@ public class SaleDiscountService : ISaleDiscountService
     /// <summary>
     /// Calculates the total amount after discount
     /// </summary>
-    public decimal CalculateTotalAmount(int quantity, decimal unitPrice)
+    public async Task<decimal> CalculateTotalAmountAsync(int quantity, decimal unitPrice, CancellationToken cancellationToken = default)
     {
         var subtotal = quantity * unitPrice;
-        var discountAmount = CalculateDiscountAmount(quantity, unitPrice);
+        var discountAmount = await CalculateDiscountAmountAsync(quantity, unitPrice, cancellationToken);
         return subtotal - discountAmount;
     }
 }

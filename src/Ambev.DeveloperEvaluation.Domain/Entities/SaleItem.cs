@@ -89,18 +89,15 @@ public class SaleItem : BaseEntity
         Quantity = quantity;
         UnitPrice = unitPrice;
         IsCancelled = false;
-        CalculateDiscountAndTotal();
+        // Discount calculation should be done externally using ISaleDiscountService
     }
 
     /// <summary>
-    /// Calculates the discount and total amount based on quantity and business rules
-    /// Business rules:
-    /// - 4+ items: 10% discount
-    /// - 10-20 items: 20% discount
-    /// - Below 4 items: no discount
-    /// - Maximum 20 items per product
+    /// Applies discount and calculates total amount
+    /// This method should be called after calculating discount using ISaleDiscountService
     /// </summary>
-    public void CalculateDiscountAndTotal()
+    /// <param name="discountPercentage">The discount percentage to apply (0-100)</param>
+    public void ApplyDiscount(decimal discountPercentage)
     {
         // Business rule: Maximum 20 items per product
         if (Quantity > MAX_QUANTITY_ALLOWED)
@@ -108,29 +105,15 @@ public class SaleItem : BaseEntity
             throw new DomainException($"It's not possible to sell above {MAX_QUANTITY_ALLOWED} identical items.");
         }
 
-        // Business rule: Below 4 items cannot have discount
-        if (Quantity < MIN_QUANTITY_FOR_DISCOUNT)
-        {
-            DiscountPercentage = 0;
-        }
-        // Business rule: 10-20 items have 20% discount
-        else if (Quantity >= MIN_QUANTITY_FOR_HIGH_DISCOUNT && Quantity <= MAX_QUANTITY_ALLOWED)
-        {
-            DiscountPercentage = HIGH_DISCOUNT_PERCENTAGE;
-        }
-        // Business rule: 4+ items have 10% discount
-        else if (Quantity >= MIN_QUANTITY_FOR_DISCOUNT)
-        {
-            DiscountPercentage = LOW_DISCOUNT_PERCENTAGE;
-        }
-
+        DiscountPercentage = discountPercentage;
         var subtotal = Quantity * UnitPrice;
         DiscountAmount = subtotal * (DiscountPercentage / 100);
         TotalAmount = subtotal - DiscountAmount;
     }
 
     /// <summary>
-    /// Updates the quantity and recalculates discount and total
+    /// Updates the quantity
+    /// Note: Discount must be recalculated externally using ISaleDiscountService and then ApplyDiscount should be called
     /// </summary>
     /// <param name="newQuantity">The new quantity</param>
     public void UpdateQuantity(int newQuantity)
@@ -141,7 +124,7 @@ public class SaleItem : BaseEntity
         }
 
         Quantity = newQuantity;
-        CalculateDiscountAndTotal();
+        // Discount should be recalculated externally
     }
 
     /// <summary>

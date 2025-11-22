@@ -1,22 +1,18 @@
 namespace Ambev.DeveloperEvaluation.Domain.Services;
 
 /// <summary>
-/// Service for calculating discounts based on business rules
+/// Service for calculating discounts based on business rules from database
 /// </summary>
 public interface ISaleDiscountService
 {
     /// <summary>
-    /// Calculates the discount percentage based on quantity
-    /// Business rules:
-    /// - Below 4 items: no discount (0%)
-    /// - 4-9 items: 10% discount
-    /// - 10-20 items: 20% discount
-    /// - Above 20 items: not allowed (throws exception)
+    /// Calculates the discount percentage based on quantity using rules from database
     /// </summary>
     /// <param name="quantity">The quantity of items</param>
+    /// <param name="cancellationToken">Cancellation token</param>
     /// <returns>The discount percentage (0-100)</returns>
-    /// <exception cref="DomainException">Thrown when quantity exceeds 20</exception>
-    decimal CalculateDiscountPercentage(int quantity);
+    /// <exception cref="DomainException">Thrown when quantity exceeds maximum allowed</exception>
+    Task<decimal> CalculateDiscountPercentageAsync(int quantity, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Validates if the quantity is allowed according to business rules
@@ -30,15 +26,17 @@ public interface ISaleDiscountService
     /// </summary>
     /// <param name="quantity">The quantity of items</param>
     /// <param name="unitPrice">The unit price</param>
+    /// <param name="cancellationToken">Cancellation token</param>
     /// <returns>The discount amount</returns>
-    decimal CalculateDiscountAmount(int quantity, decimal unitPrice);
+    Task<decimal> CalculateDiscountAmountAsync(int quantity, decimal unitPrice, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Calculates the total amount after discount
     /// </summary>
     /// <param name="quantity">The quantity of items</param>
     /// <param name="unitPrice">The unit price</param>
+    /// <param name="cancellationToken">Cancellation token</param>
     /// <returns>The total amount after discount</returns>
-    decimal CalculateTotalAmount(int quantity, decimal unitPrice);
+    Task<decimal> CalculateTotalAmountAsync(int quantity, decimal unitPrice, CancellationToken cancellationToken = default);
 }
 
