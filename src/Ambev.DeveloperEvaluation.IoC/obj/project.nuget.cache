@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "PyY9fRVPn/A=",
+  "dgSpecHash": "IQv03lGtw4M=",
   "success": true,
   "projectFilePath": "C:\\Users\\BrunoDias\\Documents\\Estudos\\Teste ABI-AMBEV\\template\\backend\\src\\Ambev.DeveloperEvaluation.IoC\\Ambev.DeveloperEvaluation.IoC.csproj",
   "expectedPackageFiles": [
@@ -43,8 +43,9 @@
     "C:\\Users\\BrunoDias\\.nuget\\packages\\rabbitmq.client\\7.1.2\\rabbitmq.client.7.1.2.nupkg.sha512",
     "C:\\Users\\BrunoDias\\.nuget\\packages\\rebus\\8.9.0\\rebus.8.9.0.nupkg.sha512",
     "C:\\Users\\BrunoDias\\.nuget\\packages\\rebus.rabbitmq\\10.1.0\\rebus.rabbitmq.10.1.0.nupkg.sha512",
+    "C:\\Users\\BrunoDias\\.nuget\\packages\\rebus.serilog\\8.1.0\\rebus.serilog.8.1.0.nupkg.sha512",
     "C:\\Users\\BrunoDias\\.nuget\\packages\\rebus.serviceprovider\\10.7.0\\rebus.serviceprovider.10.7.0.nupkg.sha512",
-    "C:\\Users\\BrunoDias\\.nuget\\packages\\serilog\\4.0.0\\serilog.4.0.0.nupkg.sha512",
+    "C:\\Users\\BrunoDias\\.nuget\\packages\\serilog\\4.3.0\\serilog.4.3.0.nupkg.sha512",
     "C:\\Users\\BrunoDias\\.nuget\\packages\\serilog.aspnetcore\\8.0.3\\serilog.aspnetcore.8.0.3.nupkg.sha512",
     "C:\\Users\\BrunoDias\\.nuget\\packages\\serilog.enrichers.environment\\3.0.1\\serilog.enrichers.environment.3.0.1.nupkg.sha512",
     "C:\\Users\\BrunoDias\\.nuget\\packages\\serilog.enrichers.exceptiondata\\1.0.0\\serilog.enrichers.exceptiondata.1.0.0.nupkg.sha512",

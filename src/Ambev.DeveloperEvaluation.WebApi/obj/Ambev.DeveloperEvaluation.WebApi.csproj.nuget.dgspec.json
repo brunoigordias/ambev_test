@@ -359,6 +359,10 @@
               "target": "Package",
               "version": "[10.1.0, )"
             },
+            "Rebus.Serilog": {
+              "target": "Package",
+              "version": "[8.1.0, )"
+            },
             "Rebus.ServiceProvider": {
               "target": "Package",
               "version": "[10.7.0, )"
@@ -539,6 +543,10 @@
             "Microsoft.VisualStudio.Azure.Containers.Tools.Targets": {
               "target": "Package",
               "version": "[1.20.1, )"
+            },
+            "Rebus.ServiceProvider": {
+              "target": "Package",
+              "version": "[10.7.0, )"
             },
             "Swashbuckle.AspNetCore": {
               "target": "Package",

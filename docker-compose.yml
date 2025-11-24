@@ -6,8 +6,10 @@ services:
       context: .
       dockerfile: src/Ambev.DeveloperEvaluation.WebApi/Dockerfile
     depends_on:
-      - ambev.developerevaluation.database
-      - ambev.developerevaluation.rabbitmq
+       ambev.developerevaluation.database:
+        condition: service_started
+       ambev.developerevaluation.rabbitmq:
+        condition: service_healthy
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_HTTP_PORTS=8080
@@ -57,3 +59,9 @@ services:
       - "5672:5672"
       - "15672:15672"
     restart: unless-stopped
+    healthcheck:
+      test: rabbitmq-diagnostics -q ping
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s

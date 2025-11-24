@@ -9,6 +9,7 @@ using Ambev.DeveloperEvaluation.WebApi.Middleware;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
+using Rebus.ServiceProvider;
 
 namespace Ambev.DeveloperEvaluation.WebApi;
 
@@ -42,6 +43,7 @@ public class Program
 
             builder.Services.AddJwtAuthentication(builder.Configuration);
 
+            Log.Information("Registering dependencies");
             builder.RegisterDependencies();
 
             builder.Services.AddAutoMapper(typeof(Program).Assembly, typeof(ApplicationLayer).Assembly);
@@ -57,7 +59,7 @@ public class Program
             builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
 
             var app = builder.Build();
-            
+
             // Aplicar migrações automaticamente em desenvolvimento
             if (app.Environment.IsDevelopment())
             {

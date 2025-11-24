@@ -153,10 +153,10 @@ C:\Users\BrunoDias\Documents\Estudos\Teste ABI-AMBEV\template\backend\src\Ambev.
 C:\Users\BrunoDias\Documents\Estudos\Teste ABI-AMBEV\template\backend\src\Ambev.DeveloperEvaluation.WebApi\obj\Debug\net8.0\staticwebassets.development.json
 C:\Users\BrunoDias\Documents\Estudos\Teste ABI-AMBEV\template\backend\src\Ambev.DeveloperEvaluation.WebApi\obj\Debug\net8.0\staticwebassets.build.endpoints.json
 C:\Users\BrunoDias\Documents\Estudos\Teste ABI-AMBEV\template\backend\src\Ambev.DeveloperEvaluation.WebApi\obj\Debug\net8.0\swae.build.ex.cache
-C:\Users\BrunoDias\Documents\Estudos\Teste ABI-AMBEV\template\backend\src\Ambev.DeveloperEvaluation.WebApi\obj\Debug\net8.0\staticwebassets.upToDateCheck.txt
 C:\Users\BrunoDias\Documents\Estudos\Teste ABI-AMBEV\template\backend\src\Ambev.DeveloperEvaluation.WebApi\obj\Debug\net8.0\Ambev.De.DEA3C0BD.Up2Date
 C:\Users\BrunoDias\Documents\Estudos\Teste ABI-AMBEV\template\backend\src\Ambev.DeveloperEvaluation.WebApi\obj\Debug\net8.0\Ambev.DeveloperEvaluation.WebApi.dll
 C:\Users\BrunoDias\Documents\Estudos\Teste ABI-AMBEV\template\backend\src\Ambev.DeveloperEvaluation.WebApi\obj\Debug\net8.0\refint\Ambev.DeveloperEvaluation.WebApi.dll
 C:\Users\BrunoDias\Documents\Estudos\Teste ABI-AMBEV\template\backend\src\Ambev.DeveloperEvaluation.WebApi\obj\Debug\net8.0\Ambev.DeveloperEvaluation.WebApi.pdb
 C:\Users\BrunoDias\Documents\Estudos\Teste ABI-AMBEV\template\backend\src\Ambev.DeveloperEvaluation.WebApi\obj\Debug\net8.0\Ambev.DeveloperEvaluation.WebApi.genruntimeconfig.cache
 C:\Users\BrunoDias\Documents\Estudos\Teste ABI-AMBEV\template\backend\src\Ambev.DeveloperEvaluation.WebApi\obj\Debug\net8.0\ref\Ambev.DeveloperEvaluation.WebApi.dll
+C:\Users\BrunoDias\Documents\Estudos\Teste ABI-AMBEV\template\backend\src\Ambev.DeveloperEvaluation.WebApi\bin\Debug\net8.0\Rebus.Serilog.dll
