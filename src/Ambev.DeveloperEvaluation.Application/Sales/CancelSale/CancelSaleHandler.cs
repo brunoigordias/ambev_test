@@ -1,5 +1,6 @@
 using AutoMapper;
 using MediatR;
+using Microsoft.Extensions.Logging;
 using Ambev.DeveloperEvaluation.Domain.Repositories;
 using Ambev.DeveloperEvaluation.Domain.Events;
 
@@ -12,11 +13,16 @@ public class CancelSaleHandler : IRequestHandler<CancelSaleCommand, CancelSaleRe
 {
     private readonly ISaleRepository _saleRepository;
     private readonly IMapper _mapper;
+    private readonly ILogger<CancelSaleHandler> _logger;
 
-    public CancelSaleHandler(ISaleRepository saleRepository, IMapper mapper)
+    public CancelSaleHandler(
+        ISaleRepository saleRepository, 
+        IMapper mapper,
+        ILogger<CancelSaleHandler> logger)
     {
         _saleRepository = saleRepository;
         _mapper = mapper;
+        _logger = logger;
     }
 
     public async Task<CancelSaleResult> Handle(CancelSaleCommand command, CancellationToken cancellationToken)
@@ -28,9 +34,18 @@ public class CancelSaleHandler : IRequestHandler<CancelSaleCommand, CancelSaleRe
         sale.Cancel();
         var updatedSale = await _saleRepository.UpdateAsync(sale, cancellationToken);
 
-        // TODO: Publish SaleCancelledEvent
-        // var saleCancelledEvent = new SaleCancelledEvent(updatedSale);
-        // await _mediator.Publish(saleCancelledEvent, cancellationToken);
+        // Log SaleCancelledEvent
+        var saleCancelledEvent = new SaleCancelledEvent(updatedSale);
+        _logger.LogInformation(
+            "SaleCancelledEvent: Sale {SaleId} with number {SaleNumber} cancelled at {CancelledAt}. Customer: {CustomerName} ({CustomerId}), Branch: {BranchDescription} ({BranchId}). Original amount: {TotalAmount:C}",
+            updatedSale.Id,
+            updatedSale.SaleNumber,
+            updatedSale.CancelledAt,
+            updatedSale.CustomerName,
+            updatedSale.CustomerId,
+            updatedSale.BranchDescription,
+            updatedSale.BranchId,
+            updatedSale.TotalAmount);
 
         return _mapper.Map<CancelSaleResult>(updatedSale);
     }

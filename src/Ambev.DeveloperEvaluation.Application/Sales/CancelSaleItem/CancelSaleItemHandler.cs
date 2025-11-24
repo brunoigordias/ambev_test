@@ -1,5 +1,6 @@
 using AutoMapper;
 using MediatR;
+using Microsoft.Extensions.Logging;
 using Ambev.DeveloperEvaluation.Domain.Repositories;
 using Ambev.DeveloperEvaluation.Domain.Events;
 
@@ -12,11 +13,16 @@ public class CancelSaleItemHandler : IRequestHandler<CancelSaleItemCommand, Canc
 {
     private readonly ISaleRepository _saleRepository;
     private readonly IMapper _mapper;
+    private readonly ILogger<CancelSaleItemHandler> _logger;
 
-    public CancelSaleItemHandler(ISaleRepository saleRepository, IMapper mapper)
+    public CancelSaleItemHandler(
+        ISaleRepository saleRepository, 
+        IMapper mapper,
+        ILogger<CancelSaleItemHandler> logger)
     {
         _saleRepository = saleRepository;
         _mapper = mapper;
+        _logger = logger;
     }
 
     public async Task<CancelSaleItemResult> Handle(CancelSaleItemCommand command, CancellationToken cancellationToken)
@@ -30,12 +36,21 @@ public class CancelSaleItemHandler : IRequestHandler<CancelSaleItemCommand, Canc
 
         var cancelledItem = updatedSale.Items.FirstOrDefault(i => i.Id == command.ItemId);
 
-        // TODO: Publish ItemCancelledEvent
-        // if (cancelledItem != null)
-        // {
-        //     var itemCancelledEvent = new ItemCancelledEvent(cancelledItem, updatedSale);
-        //     await _mediator.Publish(itemCancelledEvent, cancellationToken);
-        // }
+        // Log ItemCancelledEvent
+        if (cancelledItem != null)
+        {
+            var itemCancelledEvent = new ItemCancelledEvent(cancelledItem, updatedSale);
+            _logger.LogInformation(
+                "ItemCancelledEvent: Item {ItemId} cancelled from sale {SaleId} (number: {SaleNumber}). Product: {ProductDescription} ({ProductId}), Quantity: {Quantity}, Original amount: {TotalAmount:C}. New sale total: {NewSaleTotal:C}",
+                cancelledItem.Id,
+                updatedSale.Id,
+                updatedSale.SaleNumber,
+                cancelledItem.ProductDescription,
+                cancelledItem.ProductId,
+                cancelledItem.Quantity,
+                cancelledItem.TotalAmount,
+                updatedSale.TotalAmount);
+        }
 
         return new CancelSaleItemResult
         {

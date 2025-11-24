@@ -1,6 +1,7 @@
 using AutoMapper;
 using MediatR;
 using FluentValidation;
+using Microsoft.Extensions.Logging;
 using Ambev.DeveloperEvaluation.Domain.Repositories;
 using Ambev.DeveloperEvaluation.Domain.Entities;
 using Ambev.DeveloperEvaluation.Domain.Services;
@@ -16,6 +17,7 @@ public class CreateSaleHandler : IRequestHandler<CreateSaleCommand, CreateSaleRe
     private readonly ISaleRepository _saleRepository;
     private readonly ISaleDiscountService _discountService;
     private readonly IMapper _mapper;
+    private readonly ILogger<CreateSaleHandler> _logger;
 
     /// <summary>
     /// Initializes a new instance of CreateSaleHandler
@@ -23,11 +25,13 @@ public class CreateSaleHandler : IRequestHandler<CreateSaleCommand, CreateSaleRe
     public CreateSaleHandler(
         ISaleRepository saleRepository,
         ISaleDiscountService discountService,
-        IMapper mapper)
+        IMapper mapper,
+        ILogger<CreateSaleHandler> logger)
     {
         _saleRepository = saleRepository;
         _discountService = discountService;
         _mapper = mapper;
+        _logger = logger;
     }
 
     /// <summary>
@@ -92,9 +96,18 @@ public class CreateSaleHandler : IRequestHandler<CreateSaleCommand, CreateSaleRe
         // Save to database
         var createdSale = await _saleRepository.CreateAsync(sale, cancellationToken);
 
-        // TODO: Publish SaleCreatedEvent (log or message broker)
-        // var saleCreatedEvent = new SaleCreatedEvent(createdSale);
-        // await _mediator.Publish(saleCreatedEvent, cancellationToken);
+        // Log SaleCreatedEvent
+        var saleCreatedEvent = new SaleCreatedEvent(createdSale);
+        _logger.LogInformation(
+            "SaleCreatedEvent: Sale {SaleId} with number {SaleNumber} created for customer {CustomerName} ({CustomerId}) at branch {BranchDescription} ({BranchId}). Total amount: {TotalAmount:C}. Items count: {ItemsCount}",
+            createdSale.Id,
+            createdSale.SaleNumber,
+            createdSale.CustomerName,
+            createdSale.CustomerId,
+            createdSale.BranchDescription,
+            createdSale.BranchId,
+            createdSale.TotalAmount,
+            createdSale.Items.Count);
 
         return _mapper.Map<CreateSaleResult>(createdSale);
     }

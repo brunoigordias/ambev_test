@@ -1,6 +1,7 @@
 using AutoMapper;
 using MediatR;
 using FluentValidation;
+using Microsoft.Extensions.Logging;
 using Ambev.DeveloperEvaluation.Domain.Repositories;
 using Ambev.DeveloperEvaluation.Domain.Entities;
 using Ambev.DeveloperEvaluation.Domain.Services;
@@ -16,15 +17,18 @@ public class UpdateSaleHandler : IRequestHandler<UpdateSaleCommand, UpdateSaleRe
     private readonly ISaleRepository _saleRepository;
     private readonly ISaleDiscountService _discountService;
     private readonly IMapper _mapper;
+    private readonly ILogger<UpdateSaleHandler> _logger;
 
     public UpdateSaleHandler(
         ISaleRepository saleRepository,
         ISaleDiscountService discountService,
-        IMapper mapper)
+        IMapper mapper,
+        ILogger<UpdateSaleHandler> logger)
     {
         _saleRepository = saleRepository;
         _discountService = discountService;
         _mapper = mapper;
+        _logger = logger;
     }
 
     public async Task<UpdateSaleResult> Handle(UpdateSaleCommand command, CancellationToken cancellationToken)
@@ -66,9 +70,18 @@ public class UpdateSaleHandler : IRequestHandler<UpdateSaleCommand, UpdateSaleRe
 
         var updatedSale = await _saleRepository.UpdateAsync(sale, cancellationToken);
 
-        // TODO: Publish SaleModifiedEvent
-        // var saleModifiedEvent = new SaleModifiedEvent(updatedSale);
-        // await _mediator.Publish(saleModifiedEvent, cancellationToken);
+        // Log SaleModifiedEvent
+        var saleModifiedEvent = new SaleModifiedEvent(updatedSale);
+        _logger.LogInformation(
+            "SaleModifiedEvent: Sale {SaleId} with number {SaleNumber} updated. Customer: {CustomerName} ({CustomerId}), Branch: {BranchDescription} ({BranchId}). New total amount: {TotalAmount:C}. Items count: {ItemsCount}",
+            updatedSale.Id,
+            updatedSale.SaleNumber,
+            updatedSale.CustomerName,
+            updatedSale.CustomerId,
+            updatedSale.BranchDescription,
+            updatedSale.BranchId,
+            updatedSale.TotalAmount,
+            updatedSale.Items.Count);
 
         return _mapper.Map<UpdateSaleResult>(updatedSale);
     }
