@@ -27,5 +27,11 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
             .HasConversion<string>()
             .HasMaxLength(20);
 
+        builder.Property(u => u.CreatedAt)
+            .IsRequired()
+            .HasDefaultValueSql("CURRENT_TIMESTAMP");
+
+        builder.Property(u => u.UpdatedAt)
+            .IsRequired(false);
     }
 }
