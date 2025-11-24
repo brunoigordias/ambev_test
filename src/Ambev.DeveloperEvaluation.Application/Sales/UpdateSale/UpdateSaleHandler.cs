@@ -5,6 +5,7 @@ using Ambev.DeveloperEvaluation.Domain.Repositories;
 using Ambev.DeveloperEvaluation.Domain.Entities;
 using Ambev.DeveloperEvaluation.Domain.Services;
 using Ambev.DeveloperEvaluation.Domain.Events;
+using Rebus.Bus;
 
 namespace Ambev.DeveloperEvaluation.Application.Sales.UpdateSale;
 
@@ -16,15 +17,18 @@ public class UpdateSaleHandler : IRequestHandler<UpdateSaleCommand, UpdateSaleRe
     private readonly ISaleRepository _saleRepository;
     private readonly ISaleDiscountService _discountService;
     private readonly IMapper _mapper;
+    private readonly IBus _bus;
 
     public UpdateSaleHandler(
         ISaleRepository saleRepository,
         ISaleDiscountService discountService,
-        IMapper mapper)
+        IMapper mapper,
+        IBus bus)
     {
         _saleRepository = saleRepository;
         _discountService = discountService;
         _mapper = mapper;
+        _bus = bus;
     }
 
     public async Task<UpdateSaleResult> Handle(UpdateSaleCommand command, CancellationToken cancellationToken)
@@ -66,9 +70,9 @@ public class UpdateSaleHandler : IRequestHandler<UpdateSaleCommand, UpdateSaleRe
 
         var updatedSale = await _saleRepository.UpdateAsync(sale, cancellationToken);
 
-        // TODO: Publish SaleModifiedEvent
-        // var saleModifiedEvent = new SaleModifiedEvent(updatedSale);
-        // await _mediator.Publish(saleModifiedEvent, cancellationToken);
+        // Publish SaleModifiedEvent via Rebus
+        var saleModifiedEvent = new SaleModifiedEvent(updatedSale);
+        await _bus.Publish(saleModifiedEvent);
 
         return _mapper.Map<UpdateSaleResult>(updatedSale);
     }

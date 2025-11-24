@@ -3,7 +3,9 @@ using MediatR;
 using FluentValidation;
 using Ambev.DeveloperEvaluation.Domain.Repositories;
 using Ambev.DeveloperEvaluation.Domain.Entities;
+using Ambev.DeveloperEvaluation.Domain.Events;
 using Ambev.DeveloperEvaluation.Common.Security;
+using Rebus.Bus;
 
 namespace Ambev.DeveloperEvaluation.Application.Users.CreateUser;
 
@@ -15,18 +17,21 @@ public class CreateUserHandler : IRequestHandler<CreateUserCommand, CreateUserRe
     private readonly IUserRepository _userRepository;
     private readonly IMapper _mapper;
     private readonly IPasswordHasher _passwordHasher;
+    private readonly IBus _bus;
 
     /// <summary>
     /// Initializes a new instance of CreateUserHandler
     /// </summary>
     /// <param name="userRepository">The user repository</param>
     /// <param name="mapper">The AutoMapper instance</param>
-    /// <param name="validator">The validator for CreateUserCommand</param>
-    public CreateUserHandler(IUserRepository userRepository, IMapper mapper, IPasswordHasher passwordHasher)
+    /// <param name="passwordHasher">The password hasher</param>
+    /// <param name="bus">The Rebus bus for publishing events</param>
+    public CreateUserHandler(IUserRepository userRepository, IMapper mapper, IPasswordHasher passwordHasher, IBus bus)
     {
         _userRepository = userRepository;
         _mapper = mapper;
         _passwordHasher = passwordHasher;
+        _bus = bus;
     }
 
     /// <summary>
@@ -51,6 +56,11 @@ public class CreateUserHandler : IRequestHandler<CreateUserCommand, CreateUserRe
         user.Password = _passwordHasher.HashPassword(command.Password);
 
         var createdUser = await _userRepository.CreateAsync(user, cancellationToken);
+
+        // Publish UserRegisteredEvent via Rebus
+        var userRegisteredEvent = new UserRegisteredEvent(createdUser);
+        await _bus.Publish(userRegisteredEvent);
+
         var result = _mapper.Map<CreateUserResult>(createdUser);
         return result;
     }

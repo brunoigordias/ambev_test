@@ -2,6 +2,7 @@ using AutoMapper;
 using MediatR;
 using Ambev.DeveloperEvaluation.Domain.Repositories;
 using Ambev.DeveloperEvaluation.Domain.Events;
+using Rebus.Bus;
 
 namespace Ambev.DeveloperEvaluation.Application.Sales.CancelSale;
 
@@ -12,11 +13,13 @@ public class CancelSaleHandler : IRequestHandler<CancelSaleCommand, CancelSaleRe
 {
     private readonly ISaleRepository _saleRepository;
     private readonly IMapper _mapper;
+    private readonly IBus _bus;
 
-    public CancelSaleHandler(ISaleRepository saleRepository, IMapper mapper)
+    public CancelSaleHandler(ISaleRepository saleRepository, IMapper mapper, IBus bus)
     {
         _saleRepository = saleRepository;
         _mapper = mapper;
+        _bus = bus;
     }
 
     public async Task<CancelSaleResult> Handle(CancelSaleCommand command, CancellationToken cancellationToken)
@@ -28,9 +31,9 @@ public class CancelSaleHandler : IRequestHandler<CancelSaleCommand, CancelSaleRe
         sale.Cancel();
         var updatedSale = await _saleRepository.UpdateAsync(sale, cancellationToken);
 
-        // TODO: Publish SaleCancelledEvent
-        // var saleCancelledEvent = new SaleCancelledEvent(updatedSale);
-        // await _mediator.Publish(saleCancelledEvent, cancellationToken);
+        // Publish SaleCancelledEvent via Rebus
+        var saleCancelledEvent = new SaleCancelledEvent(updatedSale);
+        await _bus.Publish(saleCancelledEvent);
 
         return _mapper.Map<CancelSaleResult>(updatedSale);
     }

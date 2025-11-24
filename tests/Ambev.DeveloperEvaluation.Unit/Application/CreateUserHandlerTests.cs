@@ -6,6 +6,7 @@ using Ambev.DeveloperEvaluation.Unit.Domain;
 using AutoMapper;
 using FluentAssertions;
 using NSubstitute;
+using Rebus.Bus;
 using Xunit;
 
 namespace Ambev.DeveloperEvaluation.Unit.Application;
@@ -18,6 +19,7 @@ public class CreateUserHandlerTests
     private readonly IUserRepository _userRepository;
     private readonly IMapper _mapper;
     private readonly IPasswordHasher _passwordHasher;
+    private readonly IBus _bus;
     private readonly CreateUserHandler _handler;
 
     /// <summary>
@@ -29,7 +31,8 @@ public class CreateUserHandlerTests
         _userRepository = Substitute.For<IUserRepository>();
         _mapper = Substitute.For<IMapper>();
         _passwordHasher = Substitute.For<IPasswordHasher>();
-        _handler = new CreateUserHandler(_userRepository, _mapper, _passwordHasher);
+        _bus = Substitute.For<IBus>();
+        _handler = new CreateUserHandler(_userRepository, _mapper, _passwordHasher, _bus);
     }
 
     /// <summary>

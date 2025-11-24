@@ -7,6 +7,7 @@ services:
       dockerfile: src/Ambev.DeveloperEvaluation.WebApi/Dockerfile
     depends_on:
       - ambev.developerevaluation.database
+      - ambev.developerevaluation.rabbitmq
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_HTTP_PORTS=8080
@@ -43,8 +44,16 @@ services:
     container_name: ambev_developer_evaluation_cache 
     image: redis:7.4.1-alpine     
     command: redis-server --requirepass ev@luAt10n
-    environment:
-       MONGO_INITDB_ROOT_USERNAME: developer
-       MONGO_INITDB_ROOT_PASSWORD: ev@luAt10n
     ports:
        - "6379"
+
+  ambev.developerevaluation.rabbitmq:
+    container_name: ambev_developer_evaluation_rabbitmq
+    image: rabbitmq:3-management-alpine
+    environment:
+      RABBITMQ_DEFAULT_USER: developer
+      RABBITMQ_DEFAULT_PASS: ev@luAt10n
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    restart: unless-stopped

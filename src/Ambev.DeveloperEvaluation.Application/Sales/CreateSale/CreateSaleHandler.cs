@@ -5,6 +5,7 @@ using Ambev.DeveloperEvaluation.Domain.Repositories;
 using Ambev.DeveloperEvaluation.Domain.Entities;
 using Ambev.DeveloperEvaluation.Domain.Services;
 using Ambev.DeveloperEvaluation.Domain.Events;
+using Rebus.Bus;
 
 namespace Ambev.DeveloperEvaluation.Application.Sales.CreateSale;
 
@@ -16,6 +17,7 @@ public class CreateSaleHandler : IRequestHandler<CreateSaleCommand, CreateSaleRe
     private readonly ISaleRepository _saleRepository;
     private readonly ISaleDiscountService _discountService;
     private readonly IMapper _mapper;
+    private readonly IBus _bus;
 
     /// <summary>
     /// Initializes a new instance of CreateSaleHandler
@@ -23,11 +25,13 @@ public class CreateSaleHandler : IRequestHandler<CreateSaleCommand, CreateSaleRe
     public CreateSaleHandler(
         ISaleRepository saleRepository,
         ISaleDiscountService discountService,
-        IMapper mapper)
+        IMapper mapper,
+        IBus bus)
     {
         _saleRepository = saleRepository;
         _discountService = discountService;
         _mapper = mapper;
+        _bus = bus;
     }
 
     /// <summary>
@@ -92,9 +96,9 @@ public class CreateSaleHandler : IRequestHandler<CreateSaleCommand, CreateSaleRe
         // Save to database
         var createdSale = await _saleRepository.CreateAsync(sale, cancellationToken);
 
-        // TODO: Publish SaleCreatedEvent (log or message broker)
-        // var saleCreatedEvent = new SaleCreatedEvent(createdSale);
-        // await _mediator.Publish(saleCreatedEvent, cancellationToken);
+        // Publish SaleCreatedEvent via Rebus
+        var saleCreatedEvent = new SaleCreatedEvent(createdSale);
+        await _bus.Publish(saleCreatedEvent);
 
         return _mapper.Map<CreateSaleResult>(createdSale);
     }

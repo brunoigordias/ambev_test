@@ -1,0 +1,1 @@
+C:\Users\BrunoDias\Documents\Estudos\Teste ABI-AMBEV\template\backend\obj\Release\docker-compose.dcproj.CoreCompileInputs.cache
