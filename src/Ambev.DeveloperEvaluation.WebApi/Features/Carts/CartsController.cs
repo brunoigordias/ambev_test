@@ -1,4 +1,5 @@
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using AutoMapper;
 using Ambev.DeveloperEvaluation.WebApi.Common;
@@ -20,6 +21,7 @@ namespace Ambev.DeveloperEvaluation.WebApi.Features.Carts;
 /// Controller for managing cart operations
 /// </summary>
 [ApiController]
+[Authorize]
 [Route("api/[controller]")]
 public class CartsController : BaseController
 {

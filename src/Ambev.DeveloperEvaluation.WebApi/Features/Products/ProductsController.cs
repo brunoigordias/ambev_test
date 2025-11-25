@@ -1,4 +1,5 @@
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using AutoMapper;
 using Ambev.DeveloperEvaluation.WebApi.Common;
@@ -22,6 +23,7 @@ namespace Ambev.DeveloperEvaluation.WebApi.Features.Products;
 /// Controller for managing product operations
 /// </summary>
 [ApiController]
+[Authorize]
 [Route("api/[controller]")]
 public class ProductsController : BaseController
 {
