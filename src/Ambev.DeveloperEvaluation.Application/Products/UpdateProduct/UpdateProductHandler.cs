@@ -52,3 +52,4 @@ public class UpdateProductHandler : IRequestHandler<UpdateProductCommand, Update
 }
 
 
+

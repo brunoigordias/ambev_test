@@ -41,3 +41,4 @@ public class GetProductHandler : IRequestHandler<GetProductQuery, GetProductResu
 }
 
 
+

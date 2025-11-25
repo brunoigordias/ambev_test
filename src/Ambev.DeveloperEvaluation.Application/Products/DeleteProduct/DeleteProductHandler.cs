@@ -41,3 +41,4 @@ public class DeleteProductHandler : IRequestHandler<DeleteProductCommand, Delete
 }
 
 
+

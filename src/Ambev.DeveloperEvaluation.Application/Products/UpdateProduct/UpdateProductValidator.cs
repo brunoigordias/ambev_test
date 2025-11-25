@@ -40,3 +40,4 @@ public class UpdateProductValidator : AbstractValidator<UpdateProductCommand>
 }
 
 
+
